@@ -1,1 +1,82 @@
- fnyjgjbhfgtvdfjnyh
+---
+- name: Downlod tomcats to java instances
+  hosts: tomcat
+  become: True
+  vars:
+    TOMCAT_USER_PATH: "/opt"
+    APP_USER: tomcat
+    APP_GROUP: tomcat
+    TOMCAT_BASE_URL: 'https://downloads.apache.org/tomcat/tomcat-9/v9.0.50/bin'
+    TOMCAT_DOWNLOAD_TAR: 'apache-tomcat-9.0.50.tar.gz'
+    TOMCAT_DOWNLOAD_DIR: 'apache-tomcat-9.0.50'
+    TOMCAT_BASE_PATH: "{{TOMCAT_USER_PATH}}/tomcat"
+    TOMCAT_DEPLOY_DIR: "{{TOMCAT_BASE_PATH}}/webapps"
+    JENKINS_URL: "https://get.jenkins.io/war-stable/2.277.4/jenkins.war"
+  tasks:
+ 
+  - name: Install Java
+    yum:
+      name: "{{item}}"
+      state: latest
+    with_items:
+      - java
+      - tar
+  
+  - name: stop tomcat service
+    systemd:
+      state: stopped
+      name: tomcat
+    ignore_errors: yes
+  
+  - name: create tomcat user path
+    file:
+      path: "{{TOMCAT_USER_PATH}}"
+      state: directory
+  
+  - name: create tomcat user
+    user:
+      name: "{{APP_USER}}"
+      comment: "Tomcat service user"
+      shell: /sbin/nologin
+      home: /opt
+  
+  
+  - name: Download tomcat tar.gz
+    get_url:
+      url: "{{TOMCAT_BASE_URL}}/{{TOMCAT_DOWNLOAD_TAR}}"
+      dest: "{{TOMCAT_USER_PATH}}/{{TOMCAT_DOWNLOAD_TAR}}"
+      force: yes
+  
+  - name: extract tomcat.tar.gz
+    unarchive:
+      src: "{{TOMCAT_USER_PATH}}/{{TOMCAT_DOWNLOAD_TAR}}"
+      dest: "{{TOMCAT_USER_PATH}}"
+      remote_src: yes
+
+  - name: changing users to apache-tomcat-9.0.50
+    command: 
+      cmd: chown -R tomcat:tomcat /opt/apache-tomcat-9.0.50
+    become: True
+
+    
+  
+  # - name: rename tomcat version directory to /opt/tomcat
+  #   shell: "mv /opt/apache-tomcat-9.0.50 /opt/tomcat"
+  
+  - name: delete default deployments from tomcat/webapps
+    file:
+      path: "{{TOMCAT_DEPLOY_DIR}}/{{item}}"
+      state: absent
+    with_items:
+      - docs
+      - ROOT
+      - host-manager
+      - examples
+      - manager
+
+  - name: starting tomcat
+    command: bash /opt/apache-tomcat-9.0.50/bin/startup.sh
+
+
+
+    

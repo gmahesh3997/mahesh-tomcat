@@ -1,0 +1,7 @@
+
+sample ansible_ssh_host=3.94.54.171 ansible_user=ec2-user
+
+[tomcat]
+ sample
+
+ 
