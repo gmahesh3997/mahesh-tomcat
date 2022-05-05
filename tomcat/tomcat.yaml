@@ -1,17 +1,4 @@
 ---
-- name: Downlod tomcats to java instances
-  hosts: tomcat
-  become: True
-  vars:
-    TOMCAT_USER_PATH: "/opt"
-    APP_USER: tomcat
-    APP_GROUP: tomcat
-    TOMCAT_BASE_URL: 'https://downloads.apache.org/tomcat/tomcat-9/v9.0.50/bin'
-    TOMCAT_DOWNLOAD_TAR: 'apache-tomcat-9.0.50.tar.gz'
-    TOMCAT_DOWNLOAD_DIR: 'apache-tomcat-9.0.50'
-    TOMCAT_BASE_PATH: "{{TOMCAT_USER_PATH}}/tomcat"
-    TOMCAT_DEPLOY_DIR: "{{TOMCAT_BASE_PATH}}/webapps"
-    JENKINS_URL: "https://get.jenkins.io/war-stable/2.277.4/jenkins.war"
   tasks:
  
   - name: Install Java
