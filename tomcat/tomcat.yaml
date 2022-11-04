@@ -13,7 +13,6 @@
     TOMCAT_DEPLOY_DIR: "{{TOMCAT_BASE_PATH}}/webapps"
     JENKINS_URL: "https://get.jenkins.io/war-stable/2.277.4/jenkins.war"
   tasks:
- 
   - name: Install Java
     yum:
       name: "{{item}}"
@@ -21,13 +20,11 @@
     with_items:
       - java
       - tar
-  
   - name: stop tomcat service
     systemd:
       state: stopped
       name: tomcat
     ignore_errors: yes
-  
   - name: create tomcat user path
     file:
       path: "{{TOMCAT_USER_PATH}}"
@@ -76,7 +73,3 @@
 
   - name: starting tomcat
     command: bash /opt/apache-tomcat-9.0.50/bin/startup.sh
-
-
-
-    
